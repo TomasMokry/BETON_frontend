@@ -115,9 +115,9 @@ export const AddNewProduct = () => {
         </div>
       )}
 
-      <div className="card shadow">
+      <div className="card form-card">
         <div className="card-header d-flex justify-content-between align-items-center">
-          <span>Edit product</span>
+          <span>New product</span>
 
           <button
             type="button"

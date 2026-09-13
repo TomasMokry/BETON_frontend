@@ -34,7 +34,7 @@ export const LoginPage = () => {
 
   return (
     <div className="container d-flex justify-content-center align-items-center">
-      <div className="card shadow mt-5" style={{ width: "400px" }}>
+      <div className="auth-card mt-5" style={{ width: "400px" }}>
         <div className="card-body p-4">
           <h2 className="text-center mb-4">Sign in</h2>
 

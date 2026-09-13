@@ -5,16 +5,12 @@ export const Navbar = () => {
   const { isAuthenticated, logout, user } = useAuth();
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark header-gradient py-2">
+    <nav className="navbar navbar-expand-lg navbar-dark site-header py-2">
       <div className="container-fluid">
-        <NavLink
-          className="navbar-brand"
-          to="/home"
-          style={{ marginLeft: "100px" }}
-        >
+        <NavLink className="navbar-brand ms-2 ms-lg-4" to="/home">
           <img
             src="/images/products/logo/be.ton_small.png"
-            alt="Beton Key Logo"
+            alt="be.ton"
           />
         </NavLink>
 
@@ -61,7 +57,7 @@ export const Navbar = () => {
                 <li className="nav-item m-1">
                   <button
                     type="button"
-                    className="btn btn-outline-light"
+                    className="btn btn-nav"
                     onClick={logout}
                   >
                     Sign out
@@ -70,7 +66,7 @@ export const Navbar = () => {
               </>
             ) : (
               <li className="nav-item m-1">
-                <NavLink to="/login" className="btn btn-outline-light">
+                <NavLink to="/login" className="btn btn-nav">
                   Sign in
                 </NavLink>
               </li>

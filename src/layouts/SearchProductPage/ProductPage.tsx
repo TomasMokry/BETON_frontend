@@ -284,7 +284,7 @@ export const ProductPage = () => {
         onSelect={setSelectedCategory}
       />
 
-      <div className="d-flex">
+      <div className="d-flex flex-column flex-lg-row">
         <div className="p-3 overflow-auto flex-grow-1">
           {/* LEFT PRODUCT GRID */}
           {isLoadingProducts ? (
@@ -303,19 +303,10 @@ export const ProductPage = () => {
         </div>
 
         {/* RIGHT SIDEBAR */}
-        <div
-          className="d-flex flex-column flex-shrink-0 p-3 bg-light"
-          style={{
-            width: "450px",
-            height: "100vh",
-            position: "sticky",
-            top: 0,
-            overflowY: "auto",
-          }}
-        >
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <strong className="fs-3">Total Price</strong>
-            <span className="fs-5">
+        <div className="d-flex flex-column flex-shrink-0 p-3 cart-panel cart-panel-sticky">
+          <div className="d-flex justify-content-between align-items-end mb-3">
+            <span className="cart-total-label">Total price</span>
+            <span className="cart-total-value">
               {cart?.totalPrice.toFixed(2) ?? "0.00"} Kč
             </span>
           </div>
@@ -399,7 +390,7 @@ export const ProductPage = () => {
             </button>
 
             <button
-              className="btn btn-primary w-100 p-2 mb-2"
+              className="btn btn-outline-ink w-100 p-2 mb-2 d-flex align-items-center justify-content-center"
               onClick={() => checkout("CASH")}
             >
               <svg

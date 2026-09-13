@@ -2,7 +2,7 @@ import type OrderModel from "../../../models/OrderModel";
 
 export const Order: React.FC<{ order: OrderModel }> = (props) => {
   return (
-    <div className="card mt-2 mb-2 rounded bg-light border-light shadow">
+    <div className="card list-card mt-2 mb-2">
       {/* TOP ROW */}
       <div className="row g-0">
         <div className="col-md-12">
@@ -18,7 +18,9 @@ export const Order: React.FC<{ order: OrderModel }> = (props) => {
                 })}
               </h5>
 
-              <div className="text-muted small">{props.order.method}</div>
+              <div className="text-muted small">
+                {props.order.method === "CASH" ? "Cash" : "Card"}
+              </div>
             </div>
 
             {/* PAYMENT METHOD ICON */}

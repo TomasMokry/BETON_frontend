@@ -10,7 +10,7 @@ export const CategoryNavbar = ({
   onSelect,
 }: CategoryNavbarProps) => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark w-100 header-gradient-darker">
+    <nav className="navbar navbar-expand-lg navbar-light w-100 category-tabs">
       <div className="container-fluid">
         <button
           className="navbar-toggler"

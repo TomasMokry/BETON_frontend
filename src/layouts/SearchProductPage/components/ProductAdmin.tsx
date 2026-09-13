@@ -14,7 +14,7 @@ export const ProductAdmin: React.FC<{ product: ProductModel }> = (props) => {
   const toggleDetails = () => setExpanded((prev) => !prev);
 
   return (
-    <div className="card mt-2 mb-2 rounded bg-light border-light shadow">
+    <div className="card list-card mt-2 mb-2">
       {/* TOP ROW */}
       <div className="row g-0">
         <div className="col-md-4">

@@ -141,7 +141,7 @@ export const EditProduct = () => {
         </div>
       )}
 
-      <div className="card shadow">
+      <div className="card form-card">
         <div className="card-header d-flex justify-content-between align-items-center">
           <span>Edit product</span>
 

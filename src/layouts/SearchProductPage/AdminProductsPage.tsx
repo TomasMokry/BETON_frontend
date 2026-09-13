@@ -65,20 +65,18 @@ export const AdminProductsPage = () => {
         onSelect={setSelectedCategory}
       />
       <div className="container">
-        {/* 🔹 CATEGORY NAVBAR */}
-
         {/* TOP ROW (search + create) */}
-        <div className="row mt-4">
-          <div className="col-6">
+        <div className="row mt-4 g-2">
+          <div className="col-12 col-md-6">
             <input
               className="form-control me-2"
               type="search"
-              placeholder="Search Product"
+              placeholder="Search products"
               aria-labelledby="Search"
             />
           </div>
 
-          <div className="col-3 ms-auto">
+          <div className="col-12 col-md-3 ms-md-auto">
             <Link
               className="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center"
               to="/products/add"
