@@ -1,4 +1,5 @@
 import { jwtDecode } from "jwt-decode";
+import { BASE_URL } from "../config";
 
 interface JwtPayload {
     exp: number;
@@ -24,7 +25,7 @@ function isTokenExpired(token: string): boolean {
 async function refreshAccessToken(): Promise<string | null> {
     try {
         const response = await fetch(
-            "http://localhost:8080/auth/refresh",
+            `${BASE_URL}/auth/refresh`,
             {
                 method: "POST",
                 credentials: "include",
