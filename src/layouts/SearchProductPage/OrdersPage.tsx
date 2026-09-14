@@ -54,7 +54,7 @@ export const OrdersPage = () => {
     <div className="container">
       {/* DAY NAVIGATION */}
       <div className="pt-4 pb-3">
-        <div className="d-flex gap-2 pb-3">
+        <div className="d-flex flex-wrap gap-2 pb-3">
           {orderDates.map((date) => (
             <button
               key={date}
