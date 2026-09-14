@@ -196,8 +196,10 @@ export const EditProduct = () => {
                 <input
                   type="number"
                   className="form-control"
-                  value={price}
-                  onChange={(e) => setPrice(Number(e.target.value))}
+                  value={price === 0 ? "" : price}
+                  onChange={(e) =>
+                    setPrice(e.target.value === "" ? 0 : Number(e.target.value))
+                  }
                 />
               </div>
             </div>
@@ -218,8 +220,10 @@ export const EditProduct = () => {
                 <input
                   type="number"
                   className="form-control"
-                  value={height}
-                  onChange={(e) => setHeight(Number(e.target.value))}
+                  value={height === 0 ? "" : height}
+                  onChange={(e) =>
+                    setHeight(e.target.value === "" ? 0 : Number(e.target.value))
+                  }
                 />
               </div>
 
@@ -228,8 +232,10 @@ export const EditProduct = () => {
                 <input
                   type="number"
                   className="form-control"
-                  value={width}
-                  onChange={(e) => setWidth(Number(e.target.value))}
+                  value={width === 0 ? "" : width}
+                  onChange={(e) =>
+                    setWidth(e.target.value === "" ? 0 : Number(e.target.value))
+                  }
                 />
               </div>
 
@@ -238,8 +244,10 @@ export const EditProduct = () => {
                 <input
                   type="number"
                   className="form-control"
-                  value={weight}
-                  onChange={(e) => setWeight(Number(e.target.value))}
+                  value={weight === 0 ? "" : weight}
+                  onChange={(e) =>
+                    setWeight(e.target.value === "" ? 0 : Number(e.target.value))
+                  }
                 />
               </div>
             </div>
@@ -260,8 +268,10 @@ export const EditProduct = () => {
                 <input
                   type="number"
                   className="form-control"
-                  value={amount}
-                  onChange={(e) => setAmount(Number(e.target.value))}
+                  value={amount === 0 ? "" : amount}
+                  onChange={(e) =>
+                    setAmount(e.target.value === "" ? 0 : Number(e.target.value))
+                  }
                 />
               </div>
               <div className="col-md-3 mb-3">
@@ -269,8 +279,10 @@ export const EditProduct = () => {
                 <input
                   type="number"
                   className="form-control"
-                  value={length}
-                  onChange={(e) => setLength(Number(e.target.value))}
+                  value={length === 0 ? "" : length}
+                  onChange={(e) =>
+                    setLength(e.target.value === "" ? 0 : Number(e.target.value))
+                  }
                 />
               </div>
             </div>
