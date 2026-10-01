@@ -12,6 +12,7 @@ import { buildProductsUrl } from "../../services/productApi";
 import { useDebounce } from "../utils/useDebounce";
 import { ProductSearchBox } from "./components/ProductSearchBox";
 import { DiscountSelect } from "./components/DiscountSelect";
+import { CartItemRow } from "./components/CartItemRow";
 import { GIFT_PERCENT } from "../../models/Discount";
 
 export const ProductPage = () => {
@@ -28,6 +29,17 @@ export const ProductPage = () => {
   const latestRequestId = useRef(0);
 
   const [cart, setCart] = useState<CartModel | null>(null);
+  const [pendingItemId, setPendingItemId] = useState<number | null>(null);
+
+  // Locks one cart line while its request runs, so fast clicks cannot race each other.
+  const withPendingItem = async (productId: number, action: () => Promise<void>) => {
+    setPendingItemId(productId);
+    try {
+      await action();
+    } finally {
+      setPendingItemId(null);
+    }
+  };
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -434,101 +446,37 @@ export const ProductPage = () => {
 
           <hr />
 
-          {/* LIST GROUP */}
-          <div className="list-group list-group-flush">
-            {cart?.items.length === 0 && (
-              <div className="text-muted text-center py-3">
-                Your cart is empty
-              </div>
-            )}
+          {/* CART LINES */}
+          {cart?.items.length === 0 && (
+            <div className="text-muted text-center py-3">
+              Your cart is empty. Add products from the list.
+            </div>
+          )}
 
+          <ul className="cart-lines">
             {cart?.items.map((item) => (
-              <div
+              <CartItemRow
                 key={item.product.id}
-                className="list-group-item py-3 lh-tight"
-              >
-                <div className="d-flex w-100 align-items-center justify-content-between">
-                  <div className="d-flex align-items-center gap-2">
-                    <div className="btn-group btn-group-sm" role="group">
-                      <button
-                        type="button"
-                        className="btn btn-outline-secondary"
-                        onClick={() =>
-                          updateItemQuantity(item.product.id, item.quantity - 1)
-                        }
-                        disabled={item.quantity <= 1}
-                        aria-label={`Decrease ${item.product.name}`}
-                      >
-                        −
-                      </button>
-                      <span className="btn btn-outline-secondary disabled text-body">
-                        {item.quantity}
-                      </span>
-                      <button
-                        type="button"
-                        className="btn btn-outline-secondary"
-                        onClick={() =>
-                          updateItemQuantity(item.product.id, item.quantity + 1)
-                        }
-                        disabled={item.quantity >= item.product.stock}
-                        aria-label={`Increase ${item.product.name}`}
-                      >
-                        +
-                      </button>
-                    </div>
-                    <strong>{item.product.name}</strong>
-                  </div>
-
-                  <div className="d-flex align-items-center gap-3">
-                    {item.discountPercent === GIFT_PERCENT ? (
-                      <span className="badge bg-success">Gift</span>
-                    ) : (
-                      <small>
-                        {item.discountPercent > 0 && (
-                          <span className="text-decoration-line-through text-muted me-1">
-                            {item.subtotalPrice.toFixed(2)}
-                          </span>
-                        )}
-                        {item.totalPrice.toFixed(2)} Kč
-                      </small>
-                    )}
-
-                    <button
-                      type="button"
-                      className="btn p-0 border-0"
-                      onClick={() => deleteCartItem(item.product.id)}
-                      aria-label={`Remove ${item.product.name}`}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        fill="currentColor"
-                        className="bi bi-x-circle text-secondary"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="d-flex align-items-center justify-content-between mt-1">
-                  <div className="small text-muted">
-                    {item.product.price.toFixed(2)} Kč / piece
-                  </div>
-                  <DiscountSelect
-                    value={item.discountPercent}
-                    onChange={(percent) =>
-                      updateItemDiscount(item.product.id, percent)
-                    }
-                    ariaLabel={`Discount for ${item.product.name}`}
-                  />
-                </div>
-              </div>
+                item={item}
+                pending={pendingItemId === item.product.id}
+                onQuantityChange={(quantity) =>
+                  withPendingItem(item.product.id, () =>
+                    updateItemQuantity(item.product.id, quantity),
+                  )
+                }
+                onDiscountChange={(percent) =>
+                  withPendingItem(item.product.id, () =>
+                    updateItemDiscount(item.product.id, percent),
+                  )
+                }
+                onRemove={() =>
+                  withPendingItem(item.product.id, () =>
+                    deleteCartItem(item.product.id),
+                  )
+                }
+              />
             ))}
-          </div>
+          </ul>
           {cart && cart.items.length > 0 && (
             <div className="d-flex align-items-center justify-content-between mt-3">
               <span>Cart discount</span>
