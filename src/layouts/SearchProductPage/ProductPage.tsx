@@ -184,6 +184,34 @@ export const ProductPage = () => {
     }
   };
 
+  const updateItemQuantity = async (productId: number, quantity: number) => {
+    if (!cart || quantity < 1) {
+      return;
+    }
+
+    try {
+      const response = await fetchWithAuth(
+        `${BASE_URL}/carts/${cart.id}/items/${productId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ quantity }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Cannot update item quantity");
+      }
+
+      await fetchCart();
+    } catch (err: any) {
+      setHttpError(err.message);
+      setShowError(true);
+    }
+  };
+
   const updateItemDiscount = async (productId: number, discountPercent: number) => {
     if (!cart) {
       return;
@@ -420,9 +448,36 @@ export const ProductPage = () => {
                 className="list-group-item py-3 lh-tight"
               >
                 <div className="d-flex w-100 align-items-center justify-content-between">
-                  <strong className="mb-1">
-                    {item.product.name} - {item.quantity}x
-                  </strong>
+                  <div className="d-flex align-items-center gap-2">
+                    <div className="btn-group btn-group-sm" role="group">
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={() =>
+                          updateItemQuantity(item.product.id, item.quantity - 1)
+                        }
+                        disabled={item.quantity <= 1}
+                        aria-label={`Decrease ${item.product.name}`}
+                      >
+                        −
+                      </button>
+                      <span className="btn btn-outline-secondary disabled text-body">
+                        {item.quantity}
+                      </span>
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={() =>
+                          updateItemQuantity(item.product.id, item.quantity + 1)
+                        }
+                        disabled={item.quantity >= item.product.stock}
+                        aria-label={`Increase ${item.product.name}`}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <strong>{item.product.name}</strong>
+                  </div>
 
                   <div className="d-flex align-items-center gap-3">
                     {item.discountPercent === GIFT_PERCENT ? (
