@@ -7,6 +7,9 @@ import { CategoryNavbar } from "./components/CategoryNavbar";
 import { SpinnerLoading } from "../utils/SpinnerLoading";
 import { fetchWithAuth } from "../../services/fetchWithAuth";
 import { BASE_URL } from "../../config";
+import { buildProductsUrl } from "../../services/productApi";
+import { useDebounce } from "../utils/useDebounce";
+import { ProductSearchBox } from "./components/ProductSearchBox";
 
 export const AdminProductsPage = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
@@ -15,6 +18,10 @@ export const AdminProductsPage = () => {
 
   const [categories, setCategories] = useState<CategoryModel[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedQuery = useDebounce(searchQuery);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // Load categories once
   useEffect(() => {
@@ -29,33 +36,39 @@ export const AdminProductsPage = () => {
     fetchCategories().catch((err) => setHttpError(err.message));
   }, []);
 
-  // Load products when category changes
+  // Load products when category or search query changes
   useEffect(() => {
+    let ignore = false;
     setIsLoadingProducts(true);
 
     const fetchProducts = async () => {
-      let url = `${BASE_URL}/products`;
-
-      if (selectedCategory !== null) {
-        url += `?categoryId=${selectedCategory}`;
-      }
-
-      const response = await fetchWithAuth(url);
+      const response = await fetchWithAuth(
+        buildProductsUrl(debouncedQuery, selectedCategory),
+      );
       if (!response.ok) throw new Error("Cannot load products");
 
       const data = await response.json();
-      setProducts(data);
+      if (ignore) return;
 
+      setProducts(data);
       setIsLoadingProducts(false);
+      setIsInitialLoad(false);
     };
 
     fetchProducts().catch((err) => {
+      if (ignore) return;
       setHttpError(err.message);
       setIsLoadingProducts(false);
+      setIsInitialLoad(false);
     });
-  }, [selectedCategory]);
 
-  if (isLoadingProducts) return <SpinnerLoading />;
+    // Drop responses from outdated requests
+    return () => {
+      ignore = true;
+    };
+  }, [selectedCategory, debouncedQuery]);
+
+  if (isInitialLoad) return <SpinnerLoading />;
 
   return (
     <div>
@@ -68,12 +81,7 @@ export const AdminProductsPage = () => {
         {/* TOP ROW (search + create) */}
         <div className="row mt-4 g-2">
           <div className="col-12 col-md-6">
-            <input
-              className="form-control me-2"
-              type="search"
-              placeholder="Search products"
-              aria-labelledby="Search"
-            />
+            <ProductSearchBox value={searchQuery} onChange={setSearchQuery} />
           </div>
 
           <div className="col-12 col-md-3 ms-md-auto">
@@ -104,9 +112,17 @@ export const AdminProductsPage = () => {
 
         {/* PRODUCT LIST */}
         <div className="mt-3">
-          {products.map((product) => (
-            <ProductAdmin product={product} key={product.id} />
-          ))}
+          {isLoadingProducts ? (
+            <SpinnerLoading />
+          ) : products.length === 0 && debouncedQuery.trim() ? (
+            <div className="text-muted text-center py-4">
+              No products match "{debouncedQuery.trim()}"
+            </div>
+          ) : (
+            products.map((product) => (
+              <ProductAdmin product={product} key={product.id} />
+            ))
+          )}
         </div>
       </div>
     </div>

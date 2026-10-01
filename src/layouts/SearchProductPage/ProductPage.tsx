@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CategoryNavbar } from "./components/CategoryNavbar";
 import ProductModel from "../../models/ProductModel";
 import CategoryModel from "../../models/CategoryModel";
@@ -8,6 +8,9 @@ import type CartModel from "../../models/CartModel";
 import { fetchWithAuth } from "../../services/fetchWithAuth";
 import { NotificationToast } from "./components/NotificationToast";
 import { BASE_URL } from "../../config";
+import { buildProductsUrl } from "../../services/productApi";
+import { useDebounce } from "../utils/useDebounce";
+import { ProductSearchBox } from "./components/ProductSearchBox";
 
 export const ProductPage = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
@@ -16,6 +19,11 @@ export const ProductPage = () => {
 
   const [categories, setCategories] = useState<CategoryModel[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedQuery = useDebounce(searchQuery);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const latestRequestId = useRef(0);
 
   const [cart, setCart] = useState<CartModel | null>(null);
 
@@ -218,16 +226,14 @@ export const ProductPage = () => {
   }, []);
 
   const fetchProducts = async () => {
+    // Only the latest request may update state (drops outdated responses)
+    const requestId = ++latestRequestId.current;
     setIsLoadingProducts(true);
 
     try {
-      let url = `${BASE_URL}/products`;
-
-      if (selectedCategory !== null) {
-        url += `?categoryId=${selectedCategory}`;
-      }
-
-      const response = await fetchWithAuth(url);
+      const response = await fetchWithAuth(
+        buildProductsUrl(debouncedQuery, selectedCategory),
+      );
 
       if (!response.ok) {
         throw new Error("Cannot load products");
@@ -235,21 +241,26 @@ export const ProductPage = () => {
 
       const data: ProductModel[] = await response.json();
 
+      if (requestId !== latestRequestId.current) return;
       setProducts(data);
     } catch (err: any) {
+      if (requestId !== latestRequestId.current) return;
       setHttpError(err.message);
       setShowError(true);
     } finally {
-      setIsLoadingProducts(false);
+      if (requestId === latestRequestId.current) {
+        setIsLoadingProducts(false);
+        setIsInitialLoad(false);
+      }
     }
   };
 
-  // Load products on category change
+  // Load products on category or search query change
   useEffect(() => {
     fetchProducts();
-  }, [selectedCategory]);
+  }, [selectedCategory, debouncedQuery]);
 
-  if (isLoadingProducts) return <SpinnerLoading />;
+  if (isInitialLoad) return <SpinnerLoading />;
 
   return (
     <div>
@@ -286,9 +297,17 @@ export const ProductPage = () => {
 
       <div className="d-flex flex-column flex-lg-row">
         <div className="p-3 overflow-auto flex-grow-1">
+          <div className="mx-1 mb-3">
+            <ProductSearchBox value={searchQuery} onChange={setSearchQuery} />
+          </div>
+
           {/* LEFT PRODUCT GRID */}
           {isLoadingProducts ? (
-            <div>Loading products...</div>
+            <SpinnerLoading />
+          ) : products.length === 0 && debouncedQuery.trim() ? (
+            <div className="text-muted text-center py-4">
+              No products match "{debouncedQuery.trim()}"
+            </div>
           ) : (
             <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4 g-3 mx-1">
               {products.map((product) => (
