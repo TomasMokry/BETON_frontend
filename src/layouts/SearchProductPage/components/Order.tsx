@@ -55,6 +55,15 @@ export const Order: React.FC<{ order: OrderModel }> = (props) => {
 
       {/* ORDER ITEMS */}
       <div className="card-body border-top bg-white">
+        {/* COLUMN HEADER */}
+        <div className="row d-none d-md-flex border-bottom pb-2 small text-muted fw-semibold">
+          <div className="col-md-5">Name</div>
+          <div className="col-md-1">Amount</div>
+          <div className="col-md-2">Price per piece</div>
+          <div className="col-md-2">Discount</div>
+          <div className="col-md-2 text-end">Total</div>
+        </div>
+
         {props.order.items.map((item) => (
           <div
             key={item.product.id}
