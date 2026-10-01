@@ -420,7 +420,7 @@ export const ProductPage = () => {
         </div>
 
         {/* RIGHT SIDEBAR */}
-        <div className="d-flex flex-column flex-shrink-0 p-3 cart-panel cart-panel-sticky">
+        <div className="d-flex flex-column flex-shrink-0 p-3 cart-panel cart-panel-sticky order-first order-lg-last">
           {cart && cart.discountPercent > 0 && (
             <>
               <div className="d-flex justify-content-between small text-muted">

@@ -376,7 +376,7 @@ a:hover {
 }
 .cart-panel-sticky {
   width: 100%;
-  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
   border-left: none;
 }
 @media (min-width: 992px) {
@@ -386,7 +386,7 @@ a:hover {
     position: sticky;
     top: 0;
     overflow-y: auto;
-    border-top: none;
+    border-bottom: none;
     border-left: 1px solid var(--line);
   }
 }
@@ -519,10 +519,14 @@ a:hover {
   font-variant-numeric: tabular-nums;
 }
 
+/* Pill shape to match the quantity stepper. */
 .discount-select {
   width: auto;
   min-width: 0;
   height: 2.25rem;
+  border-radius: 999px;
+  padding-left: 0.9rem;
+  background-position: right 0.75rem center;
 }
 .discount-select.is-active {
   background-color: var(--accent-tint);
