@@ -1,26 +1,25 @@
 import type CartProductModel from "./CartProductModel";
 
-
-class CartItemModel {
+class OrderItemModel {
   product: CartProductModel;
   quantity: number;
-  subtotalPrice: number;
+  unitPrice: number;
   discountPercent: number;
   totalPrice: number;
 
   constructor(
     product: CartProductModel,
     quantity: number,
-    subtotalPrice: number,
+    unitPrice: number,
     discountPercent: number,
     totalPrice: number
   ) {
     this.product = product;
     this.quantity = quantity;
-    this.subtotalPrice = subtotalPrice;
+    this.unitPrice = unitPrice;
     this.discountPercent = discountPercent;
     this.totalPrice = totalPrice;
   }
 }
 
-export default CartItemModel;
+export default OrderItemModel;

@@ -11,6 +11,8 @@ import { BASE_URL } from "../../config";
 import { buildProductsUrl } from "../../services/productApi";
 import { useDebounce } from "../utils/useDebounce";
 import { ProductSearchBox } from "./components/ProductSearchBox";
+import { DiscountSelect } from "./components/DiscountSelect";
+import { GIFT_PERCENT } from "../../models/Discount";
 
 export const ProductPage = () => {
   const [products, setProducts] = useState<ProductModel[]>([]);
@@ -182,6 +184,62 @@ export const ProductPage = () => {
     }
   };
 
+  const updateItemDiscount = async (productId: number, discountPercent: number) => {
+    if (!cart) {
+      return;
+    }
+
+    try {
+      const response = await fetchWithAuth(
+        `${BASE_URL}/carts/${cart.id}/items/${productId}/discount`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ discountPercent }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Cannot update item discount");
+      }
+
+      await fetchCart();
+    } catch (err: any) {
+      setHttpError(err.message);
+      setShowError(true);
+    }
+  };
+
+  const updateCartDiscount = async (discountPercent: number) => {
+    if (!cart) {
+      return;
+    }
+
+    try {
+      const response = await fetchWithAuth(
+        `${BASE_URL}/carts/${cart.id}/discount`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ discountPercent }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Cannot update cart discount");
+      }
+
+      await fetchCart();
+    } catch (err: any) {
+      setHttpError(err.message);
+      setShowError(true);
+    }
+  };
+
   useEffect(() => {
     const initializeCart = async () => {
       const cartId = localStorage.getItem("cartId");
@@ -323,6 +381,22 @@ export const ProductPage = () => {
 
         {/* RIGHT SIDEBAR */}
         <div className="d-flex flex-column flex-shrink-0 p-3 cart-panel cart-panel-sticky">
+          {cart && cart.discountPercent > 0 && (
+            <>
+              <div className="d-flex justify-content-between small text-muted">
+                <span>Subtotal</span>
+                <span>{cart.subtotalPrice.toFixed(2)} Kč</span>
+              </div>
+              <div className="d-flex justify-content-between small text-muted mb-1">
+                <span>
+                  {cart.discountPercent === GIFT_PERCENT
+                    ? "Gift (100 %)"
+                    : `Discount -${cart.discountPercent} %`}
+                </span>
+                <span>-{cart.discountAmount.toFixed(2)} Kč</span>
+              </div>
+            </>
+          )}
           <div className="d-flex justify-content-between align-items-end mb-3">
             <span className="cart-total-label">Total price</span>
             <span className="cart-total-value">
@@ -351,7 +425,18 @@ export const ProductPage = () => {
                   </strong>
 
                   <div className="d-flex align-items-center gap-3">
-                    <small>{item.totalPrice.toFixed(2)} Kč</small>
+                    {item.discountPercent === GIFT_PERCENT ? (
+                      <span className="badge bg-success">Gift</span>
+                    ) : (
+                      <small>
+                        {item.discountPercent > 0 && (
+                          <span className="text-decoration-line-through text-muted me-1">
+                            {item.subtotalPrice.toFixed(2)}
+                          </span>
+                        )}
+                        {item.totalPrice.toFixed(2)} Kč
+                      </small>
+                    )}
 
                     <button
                       type="button"
@@ -374,12 +459,31 @@ export const ProductPage = () => {
                   </div>
                 </div>
 
-                <div className="small text-muted">
-                  {item.product.price.toFixed(2)} Kč / piece
+                <div className="d-flex align-items-center justify-content-between mt-1">
+                  <div className="small text-muted">
+                    {item.product.price.toFixed(2)} Kč / piece
+                  </div>
+                  <DiscountSelect
+                    value={item.discountPercent}
+                    onChange={(percent) =>
+                      updateItemDiscount(item.product.id, percent)
+                    }
+                    ariaLabel={`Discount for ${item.product.name}`}
+                  />
                 </div>
               </div>
             ))}
           </div>
+          {cart && cart.items.length > 0 && (
+            <div className="d-flex align-items-center justify-content-between mt-3">
+              <span>Cart discount</span>
+              <DiscountSelect
+                value={cart.discountPercent}
+                onChange={updateCartDiscount}
+                ariaLabel="Cart discount"
+              />
+            </div>
+          )}
           <button
             className="btn btn-outline-secondary w-100 p-2 mb-2 mt-3"
             onClick={clearCart}

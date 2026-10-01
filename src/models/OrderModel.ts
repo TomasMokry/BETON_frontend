@@ -1,21 +1,27 @@
-import CartItemModel from "./CartItemModel";
+import OrderItemModel from "./OrderItemModel";
 
 class OrderModel {
   id: string;
   method: string;
   createdAt: string;
+  subtotalPrice: number | null;
+  discountPercent: number;
   totalPrice: number;
-  items: CartItemModel[];
+  items: OrderItemModel[];
 
   constructor(
     id: string,
     method: string,
+    subtotalPrice: number | null,
+    discountPercent: number,
     totalPrice: number,
     createdAt: string,
-    items: CartItemModel[]
+    items: OrderItemModel[]
   ) {
     this.id = id;
     this.method = method;
+    this.subtotalPrice = subtotalPrice;
+    this.discountPercent = discountPercent;
     this.totalPrice = totalPrice;
     this.createdAt = createdAt;
     this.items = items;

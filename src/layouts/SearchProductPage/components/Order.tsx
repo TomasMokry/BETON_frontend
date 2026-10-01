@@ -1,4 +1,5 @@
 import type OrderModel from "../../../models/OrderModel";
+import { GIFT_PERCENT } from "../../../models/Discount";
 
 export const Order: React.FC<{ order: OrderModel }> = (props) => {
   return (
@@ -59,17 +60,47 @@ export const Order: React.FC<{ order: OrderModel }> = (props) => {
             key={item.product.id}
             className="row align-items-center border-bottom py-3"
           >
-            <div className="col-md-6">{item.product.name}</div>
+            <div className="col-md-5">{item.product.name}</div>
 
-            <div className="col-md-2">{item.quantity}x</div>
+            <div className="col-md-1">{item.quantity}x</div>
 
-            <div className="col-md-2">{item.product.price.toFixed(2)} Kč</div>
+            <div className="col-md-2">{item.unitPrice.toFixed(2)} Kč</div>
+
+            <div className="col-md-2">
+              {item.discountPercent === GIFT_PERCENT ? (
+                <span className="badge bg-success">Gift</span>
+              ) : item.discountPercent > 0 ? (
+                <span className="text-muted">-{item.discountPercent} %</span>
+              ) : null}
+            </div>
 
             <div className="col-md-2 text-end">
               {item.totalPrice.toFixed(2)} Kč
             </div>
           </div>
         ))}
+
+        {/* CART DISCOUNT */}
+        {props.order.discountPercent > 0 && props.order.subtotalPrice != null && (
+          <>
+            <div className="row pt-3 text-muted">
+              <div className="col-md-10">Subtotal:</div>
+              <div className="col-md-2 text-end">
+                {props.order.subtotalPrice.toFixed(2)} Kč
+              </div>
+            </div>
+            <div className="row text-muted">
+              <div className="col-md-10">
+                {props.order.discountPercent === GIFT_PERCENT
+                  ? "Gift (100 %):"
+                  : `Discount -${props.order.discountPercent} %:`}
+              </div>
+              <div className="col-md-2 text-end">
+                -{(props.order.subtotalPrice - props.order.totalPrice).toFixed(2)} Kč
+              </div>
+            </div>
+          </>
+        )}
 
         {/* TOTAL PRICE */}
         <div className="row py-3 fw-bold">
