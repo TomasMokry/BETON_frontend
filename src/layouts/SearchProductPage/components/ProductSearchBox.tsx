@@ -7,7 +7,7 @@ interface ProductSearchBoxProps {
 export const ProductSearchBox = ({
   value,
   onChange,
-  placeholder = "Search products",
+  placeholder = "Search product by name",
 }: ProductSearchBoxProps) => {
   return (
     <input
