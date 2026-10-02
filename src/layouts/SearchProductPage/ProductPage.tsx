@@ -157,7 +157,9 @@ export const ProductPage = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Checkout failed");
+        // Show the backend's reason (e.g. "Product is out of stock") when it sends one
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.error ?? "Checkout failed");
       }
 
       const data = await response.json();
