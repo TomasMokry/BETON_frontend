@@ -127,7 +127,7 @@ export const OrdersPage = () => {
               <div className="card list-card h-100">
                 <div className="card-body py-2">
                   <div className="d-flex justify-content-between align-items-baseline">
-                    <span className="fw-semibold">
+                    <span className="fw-bold">
                       {row.marketPlaceName ?? "No market"}
                     </span>
                     <span className="text-muted small">

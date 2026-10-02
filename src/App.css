@@ -227,6 +227,15 @@ a:hover {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.market-badge {
+  color: var(--ink-soft);
+  background-color: var(--paper);
+  border: 1px solid var(--line);
+  font-weight: 500;
+}
+.market-archived {
+  opacity: 0.7;
+}
 
 .site-footer {
   border-top: 1px solid var(--line);

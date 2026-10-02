@@ -101,7 +101,7 @@ export const MarketPlacesPage = () => {
         marketPlaces.map((market) => (
           <div
             key={market.id}
-            className={`card list-card mb-2 ${market.active ? "" : "opacity-75"}`}
+            className={`card list-card mb-2 ${market.active ? "" : "market-archived"}`}
           >
             <div className="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
               <div>

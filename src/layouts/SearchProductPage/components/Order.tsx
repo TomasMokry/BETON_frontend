@@ -23,7 +23,7 @@ export const Order: React.FC<{ order: OrderModel }> = (props) => {
                 {props.order.method === "CASH" ? "Cash" : "Card"}
               </div>
 
-              <span className="badge rounded-pill text-bg-light border">
+              <span className="badge rounded-pill market-badge">
                 {props.order.marketPlace?.name ?? "No market"}
               </span>
             </div>
