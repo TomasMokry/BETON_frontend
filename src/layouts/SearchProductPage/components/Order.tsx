@@ -138,6 +138,24 @@ export const Order: React.FC<{ order: OrderModel }> = (props) => {
             {props.order.totalPrice.toFixed(2)} Kč
           </div>
         </div>
+
+        {/* BANK FEE (card payments) */}
+        {props.order.cardFee != null && props.order.cardFee > 0 && (
+          <>
+            <div className="row text-muted">
+              <div className="col-md-10">Bank fee:</div>
+              <div className="col-md-2 text-end">
+                -{props.order.cardFee.toFixed(2)} Kč
+              </div>
+            </div>
+            <div className="row pb-3 text-muted">
+              <div className="col-md-10">Net:</div>
+              <div className="col-md-2 text-end">
+                {(props.order.netPrice ?? props.order.totalPrice - props.order.cardFee).toFixed(2)} Kč
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

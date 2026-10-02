@@ -15,6 +15,8 @@ class OrderModel {
   subtotalPrice: number | null;
   discountPercent: number;
   totalPrice: number;
+  cardFee: number | null; // bank fee for card payments
+  netPrice: number | null; // totalPrice - cardFee
   items: OrderItemModel[];
 
   constructor(
@@ -25,6 +27,8 @@ class OrderModel {
     subtotalPrice: number | null,
     discountPercent: number,
     totalPrice: number,
+    cardFee: number | null,
+    netPrice: number | null,
     createdAt: string,
     items: OrderItemModel[]
   ) {
@@ -35,6 +39,8 @@ class OrderModel {
     this.subtotalPrice = subtotalPrice;
     this.discountPercent = discountPercent;
     this.totalPrice = totalPrice;
+    this.cardFee = cardFee;
+    this.netPrice = netPrice;
     this.createdAt = createdAt;
     this.items = items;
   }
