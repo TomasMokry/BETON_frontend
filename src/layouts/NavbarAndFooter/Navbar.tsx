@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
+import { MarketPlaceSelector } from "./MarketPlaceSelector";
 
 export const Navbar = () => {
   const { isAuthenticated, logout, user } = useAuth();
@@ -49,6 +50,7 @@ export const Navbar = () => {
           <ul className="navbar-nav ms-auto">
             {isAuthenticated ? (
               <>
+                <MarketPlaceSelector />
                 <li className="nav-item m-1 d-none d-lg-flex align-items-center">
                   <span className="navbar-text text-light me-3">
                     Hello, {user?.name || "User"}

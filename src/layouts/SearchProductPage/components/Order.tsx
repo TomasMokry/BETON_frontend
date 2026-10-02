@@ -22,6 +22,10 @@ export const Order: React.FC<{ order: OrderModel }> = (props) => {
               <div className="text-muted small">
                 {props.order.method === "CASH" ? "Cash" : "Card"}
               </div>
+
+              <span className="badge rounded-pill text-bg-light border">
+                {props.order.marketPlace?.name ?? "No market"}
+              </span>
             </div>
 
             {/* PAYMENT METHOD ICON */}

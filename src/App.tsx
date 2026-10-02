@@ -11,70 +11,102 @@ import { OrdersPage } from "./layouts/SearchProductPage/OrdersPage";
 import { AuthProvider } from "./auth/AuthContext";
 import { PrivateRoute } from "./auth/PrivateRoute";
 import { LoginPage } from "./layouts/HomePage/LoginPage";
+import { MarketPlaceProvider } from "./context/MarketPlaceContext";
+import { MarketPlacesPage } from "./layouts/MarketPlacesPage/MarketPlacesPage";
+import { MarketPlaceForm } from "./layouts/MarketPlacesPage/MarketPlaceForm";
 
 function App() {
   return (
     <AuthProvider>
-      <div className="d-flex flex-column min-vh-100">
-        <Navbar />
+      <MarketPlaceProvider>
+        <div className="d-flex flex-column min-vh-100">
+          <Navbar />
 
-        <div className="flex-grow-1">
-          <Routes>
-            <Route path="/" element={<Navigate to="/home" replace />} />
+          <div className="flex-grow-1">
+            <Routes>
+              <Route path="/" element={<Navigate to="/home" replace />} />
 
-            <Route path="/home" element={<HomePage />} />
+              <Route path="/home" element={<HomePage />} />
 
-            <Route
-              path="/products"
-              element={
-                <PrivateRoute>
-                  <ProductPage />
-                </PrivateRoute>
-              }
-            />
+              <Route
+                path="/products"
+                element={
+                  <PrivateRoute>
+                    <ProductPage />
+                  </PrivateRoute>
+                }
+              />
 
-            <Route
-              path="/products/edit/:id"
-              element={
-                <PrivateRoute>
-                  <EditProduct />
-                </PrivateRoute>
-              }
-            />
+              <Route
+                path="/products/edit/:id"
+                element={
+                  <PrivateRoute>
+                    <EditProduct />
+                  </PrivateRoute>
+                }
+              />
 
-            <Route
-              path="/products/add"
-              element={
-                <PrivateRoute>
-                  <AddNewProduct />
-                </PrivateRoute>
-              }
-            />
+              <Route
+                path="/products/add"
+                element={
+                  <PrivateRoute>
+                    <AddNewProduct />
+                  </PrivateRoute>
+                }
+              />
 
-            <Route
-              path="/orders"
-              element={
-                <PrivateRoute>
-                  <OrdersPage />
-                </PrivateRoute>
-              }
-            />
+              <Route
+                path="/orders"
+                element={
+                  <PrivateRoute>
+                    <OrdersPage />
+                  </PrivateRoute>
+                }
+              />
 
-            <Route
-              path="/admin"
-              element={
-                <PrivateRoute>
-                  <AdminProductsPage />
-                </PrivateRoute>
-              }
-            />
+              <Route
+                path="/admin"
+                element={
+                  <PrivateRoute>
+                    <AdminProductsPage />
+                  </PrivateRoute>
+                }
+              />
 
-            <Route path="/login" element={<LoginPage />} />
-          </Routes>
+              <Route
+                path="/marketplaces"
+                element={
+                  <PrivateRoute>
+                    <MarketPlacesPage />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path="/marketplaces/add"
+                element={
+                  <PrivateRoute>
+                    <MarketPlaceForm />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path="/marketplaces/edit/:id"
+                element={
+                  <PrivateRoute>
+                    <MarketPlaceForm />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route path="/login" element={<LoginPage />} />
+            </Routes>
+          </div>
+
+          <Footer />
         </div>
-
-        <Footer />
-      </div>
+      </MarketPlaceProvider>
     </AuthProvider>
   );
 }

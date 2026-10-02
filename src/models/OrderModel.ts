@@ -1,8 +1,10 @@
 import OrderItemModel from "./OrderItemModel";
+import type { MarketPlaceSummaryModel } from "./MarketPlaceModel";
 
 class OrderModel {
   id: string;
   method: string;
+  marketPlace: MarketPlaceSummaryModel | null;
   createdAt: string;
   subtotalPrice: number | null;
   discountPercent: number;
@@ -12,6 +14,7 @@ class OrderModel {
   constructor(
     id: string,
     method: string,
+    marketPlace: MarketPlaceSummaryModel | null,
     subtotalPrice: number | null,
     discountPercent: number,
     totalPrice: number,
@@ -20,6 +23,7 @@ class OrderModel {
   ) {
     this.id = id;
     this.method = method;
+    this.marketPlace = marketPlace;
     this.subtotalPrice = subtotalPrice;
     this.discountPercent = discountPercent;
     this.totalPrice = totalPrice;

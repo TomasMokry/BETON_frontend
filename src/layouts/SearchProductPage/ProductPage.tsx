@@ -14,8 +14,11 @@ import { ProductSearchBox } from "./components/ProductSearchBox";
 import { DiscountSelect } from "./components/DiscountSelect";
 import { CartItemRow } from "./components/CartItemRow";
 import { GIFT_PERCENT } from "../../models/Discount";
+import { useMarketPlace } from "../../context/MarketPlaceContext";
+import { Link } from "react-router-dom";
 
 export const ProductPage = () => {
+  const { current: currentMarket } = useMarketPlace();
   const [products, setProducts] = useState<ProductModel[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const [httpError, setHttpError] = useState<string | null>(null);
@@ -497,6 +500,18 @@ export const ProductPage = () => {
           <hr />
 
           {/* ACTION BUTTONS */}
+          <div className="small mb-2 text-center">
+            {currentMarket ? (
+              <>
+                Selling at: <strong>{currentMarket.name}</strong>
+              </>
+            ) : (
+              <span className="text-muted">
+                No market selected ·{" "}
+                <Link to="/marketplaces">choose one</Link>
+              </span>
+            )}
+          </div>
           <div className="d-flex flex-column gap-2">
             <button
               className="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center mt-auto"

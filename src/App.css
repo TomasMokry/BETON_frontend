@@ -217,6 +217,16 @@ a:hover {
   border-color: var(--accent-on-dark);
   color: var(--accent-on-dark);
 }
+.market-selector {
+  display: inline-flex;
+  align-items: center;
+}
+.market-selector-name {
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .site-footer {
   border-top: 1px solid var(--line);
