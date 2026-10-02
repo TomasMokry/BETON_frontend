@@ -39,25 +39,32 @@ export const OrdersPage = () => {
       : "";
 
     const fetchOrders = async () => {
-      const [ordersResponse, summaryResponse] = await Promise.all([
-        fetchWithAuth(`${BASE_URL}/orders${query}`),
-        fetchWithAuth(`${BASE_URL}/orders/summary${query}`),
-      ]);
+      const response = await fetchWithAuth(`${BASE_URL}/orders${query}`);
+      if (!response.ok) throw new Error("Cannot load orders");
 
-      if (!ordersResponse.ok || !summaryResponse.ok) {
-        throw new Error("Cannot load orders");
-      }
-
-      const ordersData: OrderModel[] = await ordersResponse.json();
-      const summaryData: OrderSummaryModel[] = await summaryResponse.json();
+      const data: OrderModel[] = await response.json();
       if (ignore) return;
 
-      setOrders(ordersData);
-      setSummary(summaryData);
+      setOrders(data);
       setSelectedDate(null); // jump to the newest day of the filtered orders
     };
 
+    // Loaded separately so a failing summary never hides the orders list
+    const fetchSummary = async () => {
+      const response = await fetchWithAuth(`${BASE_URL}/orders/summary${query}`);
+      if (!response.ok) throw new Error("Cannot load order summary");
+
+      const data: OrderSummaryModel[] = await response.json();
+      if (ignore) return;
+
+      setSummary(data);
+    };
+
     fetchOrders().catch((err) => console.error(err.message));
+    fetchSummary().catch((err) => {
+      console.error(err.message);
+      if (!ignore) setSummary([]);
+    });
 
     return () => {
       ignore = true;
