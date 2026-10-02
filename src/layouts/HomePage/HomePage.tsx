@@ -5,7 +5,7 @@ export const HomePage = () => {
         <img
           src="/images/products/logo/be.ton_big.png"
           alt="be.ton"
-          className="hero-mark hero-in"
+          className="hero-mark hero-in d-block mx-auto"
         />
 
         <dl className="hero-access d-inline-flex gap-4 mx-auto mt-4 mb-0 hero-in-delay">
