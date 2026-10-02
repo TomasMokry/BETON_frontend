@@ -469,7 +469,10 @@ a:hover {
 .cart-line-unit {
   color: var(--stone);
   font-size: 0.85rem;
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
+  margin-left: 0.5rem;
+  white-space: nowrap; /* wraps under a long name as a whole, never mid-price */
 }
 .cart-line-controls {
   display: flex;

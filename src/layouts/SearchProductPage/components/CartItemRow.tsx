@@ -16,7 +16,10 @@ export const CartItemRow: React.FC<{
   return (
     <li className={`cart-line${pending ? " is-pending" : ""}`} aria-busy={pending}>
       <div className="cart-line-head">
-        <div className="cart-line-name">{product.name}</div>
+        <div className="cart-line-name">
+          {product.name}
+          <span className="cart-line-unit">{product.price.toFixed(2)} Kč / piece</span>
+        </div>
         <button
           type="button"
           className="btn-icon cart-line-remove"
@@ -29,8 +32,6 @@ export const CartItemRow: React.FC<{
           </svg>
         </button>
       </div>
-
-      <div className="cart-line-unit">{product.price.toFixed(2)} Kč / piece</div>
 
       <div className="cart-line-controls">
         <div className="qty-stepper" role="group" aria-label={`Quantity of ${product.name}`}>
