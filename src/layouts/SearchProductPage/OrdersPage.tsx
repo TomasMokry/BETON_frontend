@@ -7,16 +7,28 @@ import type {
 import { Order } from "./components/Order";
 import { fetchWithAuth } from "../../services/fetchWithAuth";
 import { BASE_URL } from "../../config";
+import { useAuth } from "../../auth/AuthContext";
+
+interface UserOption {
+  id: number;
+  name: string;
+}
 
 // "" = all orders, "none" = orders sold outside any market place, otherwise a market place id
 const ALL_MARKETS = "";
 const NO_MARKET = "none";
+// "" = all users (admin only), otherwise a user id
+const ALL_USERS = "";
 
 export const OrdersPage = () => {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
   const [orders, setOrders] = useState<OrderModel[]>([]);
   const [summary, setSummary] = useState<OrderSummaryModel[]>([]);
   const [marketPlaces, setMarketPlaces] = useState<MarketPlaceModel[]>([]);
   const [marketFilter, setMarketFilter] = useState<string>(ALL_MARKETS);
+  const [users, setUsers] = useState<UserOption[]>([]);
+  const [userFilter, setUserFilter] = useState<string>(ALL_USERS);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   // Archived market places are included so their old orders can still be filtered
@@ -32,11 +44,25 @@ export const OrdersPage = () => {
     fetchMarketPlaces().catch((err) => console.error(err.message));
   }, []);
 
+  // Only admins may list users and see other users' orders
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const fetchUsers = async () => {
+      const response = await fetchWithAuth(`${BASE_URL}/users?sort=name`);
+      if (!response.ok) throw new Error("Cannot load users");
+      setUsers(await response.json());
+    };
+
+    fetchUsers().catch((err) => console.error(err.message));
+  }, [isAdmin]);
+
   useEffect(() => {
     let ignore = false;
-    const query = marketFilter
-      ? `?marketPlaceId=${encodeURIComponent(marketFilter)}`
-      : "";
+    const params = new URLSearchParams();
+    if (marketFilter) params.set("marketPlaceId", marketFilter);
+    if (isAdmin && userFilter) params.set("userId", userFilter);
+    const query = params.toString() ? `?${params}` : "";
 
     const fetchOrders = async () => {
       const response = await fetchWithAuth(`${BASE_URL}/orders${query}`);
@@ -69,7 +95,7 @@ export const OrdersPage = () => {
     return () => {
       ignore = true;
     };
-  }, [marketFilter]);
+  }, [marketFilter, userFilter, isAdmin]);
 
   // Get YYYY-MM-DD from backend datetime string
   const getOrderDate = (order: OrderModel): string => {
@@ -97,7 +123,7 @@ export const OrdersPage = () => {
 
   return (
     <div className="container">
-      {/* MARKET FILTER */}
+      {/* FILTERS */}
       <div className="pt-4 d-flex flex-wrap align-items-center gap-2">
         <label htmlFor="market-filter" className="form-label mb-0">
           Market place
@@ -117,6 +143,27 @@ export const OrdersPage = () => {
           ))}
           <option value={NO_MARKET}>No market</option>
         </select>
+
+        {isAdmin && (
+          <>
+            <label htmlFor="user-filter" className="form-label mb-0 ms-md-3">
+              User
+            </label>
+            <select
+              id="user-filter"
+              className="form-select w-auto"
+              value={userFilter}
+              onChange={(e) => setUserFilter(e.target.value)}
+            >
+              <option value={ALL_USERS}>All</option>
+              {users.map((option) => (
+                <option key={option.id} value={String(option.id)}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
+          </>
+        )}
       </div>
 
       {/* PER-MARKET TOTALS */}
