@@ -4,6 +4,7 @@ import { MarketPlaceSelector } from "./MarketPlaceSelector";
 
 export const Navbar = () => {
   const { isAuthenticated, logout, user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark site-header py-2">
@@ -40,12 +41,14 @@ export const Navbar = () => {
                 Orders
               </NavLink>
             </li>
-            <li className="nav-item">
-              <NavLink className="nav-link" to="/admin">
-                {" "}
-                Admin
-              </NavLink>
-            </li>
+            {isAdmin && (
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/admin">
+                  {" "}
+                  Admin
+                </NavLink>
+              </li>
+            )}
           </ul>
           <ul className="navbar-nav ms-auto">
             {isAuthenticated ? (

@@ -10,6 +10,7 @@ import { HomePage } from "./layouts/HomePage/HomePage";
 import { OrdersPage } from "./layouts/SearchProductPage/OrdersPage";
 import { AuthProvider } from "./auth/AuthContext";
 import { PrivateRoute } from "./auth/PrivateRoute";
+import { AdminRoute } from "./auth/AdminRoute";
 import { LoginPage } from "./layouts/HomePage/LoginPage";
 import { MarketPlaceProvider } from "./context/MarketPlaceContext";
 import { MarketPlacesPage } from "./layouts/MarketPlacesPage/MarketPlacesPage";
@@ -40,18 +41,18 @@ function App() {
               <Route
                 path="/products/edit/:id"
                 element={
-                  <PrivateRoute>
+                  <AdminRoute>
                     <EditProduct />
-                  </PrivateRoute>
+                  </AdminRoute>
                 }
               />
 
               <Route
                 path="/products/add"
                 element={
-                  <PrivateRoute>
+                  <AdminRoute>
                     <AddNewProduct />
-                  </PrivateRoute>
+                  </AdminRoute>
                 }
               />
 
@@ -67,9 +68,9 @@ function App() {
               <Route
                 path="/admin"
                 element={
-                  <PrivateRoute>
+                  <AdminRoute>
                     <AdminProductsPage />
-                  </PrivateRoute>
+                  </AdminRoute>
                 }
               />
 
