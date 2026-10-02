@@ -8,6 +8,8 @@ import { Order } from "./components/Order";
 import { fetchWithAuth } from "../../services/fetchWithAuth";
 import { BASE_URL } from "../../config";
 import { useAuth } from "../../auth/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { ensureCart } from "../../services/cartApi";
 
 interface UserOption {
   id: number;
@@ -30,6 +32,10 @@ export const OrdersPage = () => {
   const [users, setUsers] = useState<UserOption[]>([]);
   const [userFilter, setUserFilter] = useState<string>(ALL_USERS);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0); // bump to refetch orders + summary
+  const [busyOrderId, setBusyOrderId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   // Archived market places are included so their old orders can still be filtered
   useEffect(() => {
@@ -72,7 +78,10 @@ export const OrdersPage = () => {
       if (ignore) return;
 
       setOrders(data);
-      setSelectedDate(null); // jump to the newest day of the filtered orders
+      // Stay on the selected day while it still has orders (e.g. after a delete), else jump to the newest
+      setSelectedDate((date) =>
+        date && data.some((order) => order.createdAt.startsWith(date)) ? date : null,
+      );
     };
 
     // Loaded separately so a failing summary never hides the orders list
@@ -95,7 +104,7 @@ export const OrdersPage = () => {
     return () => {
       ignore = true;
     };
-  }, [marketFilter, userFilter, isAdmin]);
+  }, [marketFilter, userFilter, isAdmin, reloadKey]);
 
   // Get YYYY-MM-DD from backend datetime string
   const getOrderDate = (order: OrderModel): string => {
@@ -120,6 +129,54 @@ export const OrdersPage = () => {
   );
 
   const formatPrice = (value: number) => `${value.toFixed(2)} Kč`;
+
+  // Runs a delete/reopen action for one order, showing its errors above the list
+  const runOrderAction = async (order: OrderModel, action: () => Promise<void>) => {
+    setActionError(null);
+    setBusyOrderId(order.id);
+    try {
+      await action();
+    } catch (err: any) {
+      setActionError(err.message);
+    } finally {
+      setBusyOrderId(null);
+    }
+  };
+
+  const deleteOrder = (order: OrderModel) => {
+    const pieces = order.items.reduce((sum, item) => sum + item.quantity, 0);
+    if (!window.confirm(`Delete this order? ${pieces} piece(s) will be returned to stock.`)) {
+      return;
+    }
+
+    runOrderAction(order, async () => {
+      const response = await fetchWithAuth(`${BASE_URL}/orders/${order.id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Cannot delete order");
+      setReloadKey((key) => key + 1);
+    });
+  };
+
+  const reopenOrder = (order: OrderModel) =>
+    runOrderAction(order, async () => {
+      const cart = await ensureCart();
+      if (
+        cart.items.length > 0 &&
+        !window.confirm("Your cart has items. They will be replaced by this order.")
+      ) {
+        return;
+      }
+
+      const response = await fetchWithAuth(`${BASE_URL}/orders/${order.id}/reopen`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cartId: cart.id }),
+      });
+      if (!response.ok) throw new Error("Cannot reopen order");
+
+      navigate("/products");
+    });
 
   return (
     <div className="container">
@@ -215,8 +272,15 @@ export const OrdersPage = () => {
 
       {/* ORDERS */}
       <div className="pt-2">
+        {actionError && <div className="alert alert-danger">{actionError}</div>}
         {displayedOrders.map((order) => (
-          <Order key={order.id} order={order} />
+          <Order
+            key={order.id}
+            order={order}
+            busy={busyOrderId === order.id}
+            onReopen={() => reopenOrder(order)}
+            onDelete={() => deleteOrder(order)}
+          />
         ))}
       </div>
     </div>

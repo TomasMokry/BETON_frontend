@@ -1,15 +1,20 @@
 import type OrderModel from "../../../models/OrderModel";
 import { GIFT_PERCENT } from "../../../models/Discount";
 
-export const Order: React.FC<{ order: OrderModel }> = (props) => {
+export const Order: React.FC<{
+  order: OrderModel;
+  busy?: boolean; // a delete/reopen request for this order is running
+  onReopen: () => void;
+  onDelete: () => void;
+}> = (props) => {
   return (
     <div className="card list-card mt-2 mb-2">
       {/* TOP ROW */}
       <div className="row g-0">
         <div className="col-md-12">
-          <div className="card-body d-flex justify-content-between align-items-center">
+          <div className="card-body d-flex flex-wrap justify-content-between align-items-center gap-2">
             {/* DATE + ORDER INFO */}
-            <div className="d-flex align-items-center gap-3">
+            <div className="d-flex flex-wrap align-items-center gap-3">
               <h5 className="mb-0">
                 {new Date(props.order.createdAt).toLocaleDateString("en-GB")} -{" "}
                 {new Date(props.order.createdAt).toLocaleTimeString("en-US", {
@@ -43,31 +48,51 @@ export const Order: React.FC<{ order: OrderModel }> = (props) => {
               </span>
             </div>
 
-            {/* PAYMENT METHOD ICON */}
-            {props.order.method === "CASH" ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="40"
-                height="40"
-                fill="currentColor"
-                className="bi bi-cash-stack text-secondary"
-                viewBox="0 0 16 16"
+            {/* ACTIONS + PAYMENT METHOD ICON */}
+            <div className="d-flex align-items-center gap-2">
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-ink"
+                onClick={props.onReopen}
+                disabled={props.busy}
+                title="Load this order back into the cart and delete it"
               >
-                <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
-                <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2z" />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="40"
-                height="40"
-                fill="currentColor"
-                className="bi bi-credit-card text-secondary"
-                viewBox="0 0 16 16"
+                Reopen
+              </button>
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-danger me-2"
+                onClick={props.onDelete}
+                disabled={props.busy}
+                title="Delete this order and return its items to stock"
               >
-                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1zm13 3H1v6a1 1 0 0 1 1 1h12a1 1 0 0 0 1-1z" />
-              </svg>
-            )}
+                Delete
+              </button>
+              {props.order.method === "CASH" ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="40"
+                  height="40"
+                  fill="currentColor"
+                  className="bi bi-cash-stack text-secondary"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
+                  <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2z" />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="40"
+                  height="40"
+                  fill="currentColor"
+                  className="bi bi-credit-card text-secondary"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1zm13 3H1v6a1 1 0 0 1 1 1h12a1 1 0 0 0 1-1z" />
+                </svg>
+              )}
+            </div>
           </div>
         </div>
       </div>
