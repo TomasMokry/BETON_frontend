@@ -53,12 +53,12 @@ export const Navbar = () => {
           <ul className="navbar-nav ms-auto">
             {isAuthenticated ? (
               <>
-                <MarketPlaceSelector />
                 <li className="nav-item m-1 d-none d-lg-flex align-items-center">
-                  <span className="navbar-text text-light me-3">
+                  <span className="navbar-text text-light me-2">
                     Hello, {user?.name || "User"}
                   </span>
                 </li>
+                <MarketPlaceSelector />
                 <li className="nav-item m-1">
                   <button
                     type="button"
